@@ -449,7 +449,7 @@ def load_data(
             input_size=input_size,
             batch_size=batch_size,
             is_training=True,
-            use_prefetcher=False,
+            use_prefetcher=True,
             interpolation='bicubic',
             mean=[0.485, 0.456, 0.406], # ImageNet mean
             std=[0.229, 0.224, 0.225],  # ImageNet std
@@ -463,7 +463,7 @@ def load_data(
             input_size=input_size,
             batch_size=batch_size,
             is_training=False,
-            use_prefetcher=False,
+            use_prefetcher=True,
             interpolation='bicubic',
             mean=[0.485, 0.456, 0.406],
             std=[0.229, 0.224, 0.225],
@@ -497,7 +497,7 @@ def train_one_epoch(
     model.zero_grad()
     for idx, (image, target) in enumerate(data_loader_train):
         with GlobalTimer('iter', timer_container):
-            image, target = image.to('cpu').float(), target.to('cpu')
+            image, target = image.cuda(), target.cuda()
             if one_hot:
                 target = F.one_hot(target, one_hot).float()
             if scaler is not None:
@@ -555,7 +555,7 @@ def evaluate(model, criterion, data_loader, print_freq, logger, one_hot=None):
     metric_dict = RecordDict({'loss': None, 'acc@1': None, 'acc@5': None})
     with torch.no_grad():
         for idx, (image, target) in enumerate(data_loader):
-            image, target = image.to('cpu').float(), target.to('cpu')
+            image, target = image.cuda(), target.cuda()
             if one_hot:
                 target = F.one_hot(target, one_hot).float()
             output = model(image)
@@ -601,7 +601,7 @@ def test(
     with torch.no_grad():
         t = time.time()
         for idx, (image, target) in enumerate(data_loader_test):
-            image, target = image.to('cpu').float(), target.to('cpu')
+            image, target = image.cuda(), target.cuda()
             output = model(image).mean(0)
             functional.reset_net(model)
 
@@ -630,7 +630,7 @@ def test(
             break
 
     ops, params = profile(
-        model, inputs=(torch.rand(input_size).to('cpu').unsqueeze(0), ), verbose=False, custom_ops={
+        model, inputs=(torch.rand(input_size).cuda().unsqueeze(0), ), verbose=False, custom_ops={
             layer.Conv2d: count_convNd,
             Conv3x3: count_convNd,
             Conv1x1: count_convNd,
@@ -723,7 +723,7 @@ def main():
         T=args.T,
         num_classes=num_classes,
         img_size=input_size[-1],
-    ).to('cpu')
+    ).cuda()
 
     # transfer
     if args.transfer:

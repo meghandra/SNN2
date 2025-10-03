@@ -9,14 +9,14 @@ from torch.nn.common_types import _size_2_t
 class IF(neuron.IFNode):
     def __init__(self):
         super().__init__(v_threshold=1., v_reset=0., surrogate_function=surrogate.ATan(),
-                         detach_reset=True, step_mode='m', backend='torch', store_v_seq=False)
+                         detach_reset=True, step_mode='m', backend='cupy', store_v_seq=False)
 
 
 class LIF(neuron.LIFNode):
     def __init__(self):
         super().__init__(tau=2., decay_input=True, v_threshold=1., v_reset=0.,
                          surrogate_function=surrogate.ATan(), detach_reset=True, step_mode='m',
-                         backend='torch', store_v_seq=False)
+                         backend='cupy', store_v_seq=False)
 
 
 class PLIF(neuron.ParametricLIFNode):

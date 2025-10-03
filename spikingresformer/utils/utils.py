@@ -103,8 +103,8 @@ class Record:
     Synchronous record
     '''
     def __init__(self, test: bool = False) -> None:
-        self.value = torch.tensor([0], dtype=torch.float64, device='cpu')
-        self.count = torch.tensor([0], dtype=torch.int64, device='cpu')
+        self.value = torch.tensor([0], dtype=torch.float64, device='cuda')
+        self.count = torch.tensor([0], dtype=torch.int64, device='cuda')
         self.global_value = 0.0
         self.global_count = 0
         self.test = test
